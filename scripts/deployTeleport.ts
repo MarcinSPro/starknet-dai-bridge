@@ -1,12 +1,14 @@
 import { DEFAULT_STARKNET_NETWORK } from "@shardlabs/starknet-hardhat-plugin/dist/constants";
 import { expect } from "chai";
 import { task } from "hardhat/config";
+import { ArgentAccount } from "@shardlabs/starknet-hardhat-plugin/dist/account";
 
 import {
   asDec,
   deployL1,
   deployL2,
   getAddress,
+  getAccount,
   getAddressOfNextDeployedContract,
   getL2ContractAt,
   getRequiredEnv,
@@ -33,8 +35,8 @@ task("deploy-teleport", "Deploy teleport").setAction(async (_, hre) => {
   const L1_STARKNET_ADDRESS = getRequiredEnv(
     `${ADDRESS_NETWORK}_L1_STARKNET_ADDRESS`
   );
-  const L1_WORMHOLE_ROUTER_ADDRESS = getRequiredEnv(
-    `${ADDRESS_NETWORK}_L1_WORMHOLE_ROUTER_ADDRESS`
+  const L1_TELEPORT_ROUTER_ADDRESS = getRequiredEnv(
+    `${ADDRESS_NETWORK}_L1_TELEPORT_ROUTER_ADDRESS`
   );
   const L1_ESCROW_ADDRESS = getRequiredEnvDeployments(
     `${ADDRESS_NETWORK}_L1_ESCROW_ADDRESS`
@@ -52,12 +54,7 @@ task("deploy-teleport", "Deploy teleport").setAction(async (_, hre) => {
 
   console.log(`Deploying gateway on ${NETWORK}/${STARKNET_NETWORK}`);
 
-  const DEPLOYER_KEY = getRequiredEnvDeployer(`DEPLOYER_ECDSA_PRIVATE_KEY`);
-  const deployer = await hre.starknet.getAccountFromAddress(
-    getAddress("account-deployer", NETWORK),
-    DEPLOYER_KEY,
-    "OpenZeppelin"
-  );
+  const deployer: ArgentAccount = (await getAccount("deployer", hre)) as ArgentAccount;
   console.log(
     `Deploying from account: ${deployer.starknetContract.address.toString()}`
   );
@@ -96,7 +93,7 @@ task("deploy-teleport", "Deploy teleport").setAction(async (_, hre) => {
       L1_DAI_ADDRESS,
       l2DAITeleportGateway.address,
       L1_ESCROW_ADDRESS,
-      L1_WORMHOLE_ROUTER_ADDRESS,
+      L1_TELEPORT_ROUTER_ADDRESS,
     ]
   );
   expect(

@@ -13,7 +13,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-pragma solidity ^0.7.6;
+pragma solidity 0.8.13;
 pragma abicoder v2;
 
 import "./TeleportGUID.sol";
@@ -62,7 +62,7 @@ contract L1DAITeleportGateway {
   address public immutable escrow;
   TeleportRouter public immutable teleportRouter;
 
-  uint256 constant HANDLE_REGISTER_WORMHOLE = 0;
+  uint256 constant HANDLE_REGISTER_TELEPORT = 0;
   uint256 constant HANDLE_FLUSH = 1;
 
   constructor(
@@ -102,7 +102,7 @@ contract L1DAITeleportGateway {
     external
   {
     uint256[] memory payload = new uint256[](8);
-    payload[0] = HANDLE_REGISTER_WORMHOLE;
+    payload[0] = HANDLE_REGISTER_TELEPORT;
     payload[1] = toL2String(teleport.sourceDomain); // bytes32 -> uint256
     payload[2] = toL2String(teleport.targetDomain); // bytes32 -> uint256
     payload[3] = uint256(teleport.receiver); // bytes32 -> uint256

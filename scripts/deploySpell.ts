@@ -17,7 +17,7 @@ import {
 
 task("create-teleport-spell-l2", "Create L2 spell").setAction(async () => {
   const l2DAITeleportGateway = getRequiredEnvDeployments(
-    "GOERLI_L2_DAI_WORMHOLE_GATEWAY_ADDRESS"
+    "GOERLI_L2_DAI_TELEPORT_GATEWAY_ADDRESS"
   );
 
   const spell = `
@@ -55,7 +55,7 @@ end`;
 
 task("create-teleport-spell-l1", "Create L1 spell").setAction(async () => {
   const l1DAITeleportGateway = getRequiredEnvDeployments(
-    "GOERLI_L1_DAI_WORMHOLE_GATEWAY_ADDRESS"
+    "GOERLI_L1_DAI_TELEPORT_GATEWAY_ADDRESS"
   );
   const escrow = getRequiredEnvDeployments("GOERLI_L1_ESCROW_ADDRESS");
   const l1Bridge = getRequiredEnvDeployments("GOERLI_L1_DAI_BRIDGE_ADDRESS");
@@ -81,7 +81,7 @@ task("create-teleport-spell-l1", "Create L1 spell").setAction(async () => {
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-pragma solidity ^0.7.6;
+pragma solidity 0.8.13;
 
 import {DssExec} from "../common/DssExec.sol";
 import {DssAction} from "../common/DssAction.sol";

@@ -1,6 +1,8 @@
 import { Contract } from "ethers";
+import { DEFAULT_STARKNET_NETWORK } from "@shardlabs/starknet-hardhat-plugin/dist/constants";
 import { Interface } from "ethers/lib/utils";
 import { task } from "hardhat/config";
+import { getAccount } from "./utils";
 
 import {
   getAddress,
@@ -17,24 +19,16 @@ task("invoke:l2", "Invoke an L2 contract")
   .addOptionalParam("name", "Account name to execute from")
   .setAction(async ({ contract, func, calldata, name }, hre) => {
     const NETWORK = hre.network.name;
+    const STARKNET_NETWORK =
+      hre.config.starknet.network || DEFAULT_STARKNET_NETWORK;
     console.log(`Calling on ${NETWORK}`);
     const address = getAddress(contract, NETWORK);
     const contractFactory = await hre.starknet.getContractFactory(contract);
     const contractInstance = contractFactory.getContractAt(address);
     const _name = name || "default";
     const _calldata = parseCalldataL2(calldata, NETWORK, contract, func);
-    const ECDSA_PRIVATE_KEY = getRequiredEnvDeployer(
-      `${_name.toUpperCase()}_ECDSA_PRIVATE_KEY`
-    );
-    if (!ECDSA_PRIVATE_KEY) {
-      throw new Error(`Set ${_name.toUpperCase()}_ECDSA_PRIVATE_KEY in .env`);
-    }
-    const l2Signer = await hre.starknet.getAccountFromAddress(
-      getAddress(`account-${_name}`, NETWORK),
-      ECDSA_PRIVATE_KEY,
-      "OpenZeppelin"
-    );
-    const res = await l2Signer.invoke(contractInstance, func, _calldata);
+    const account = await getAccount(_name, hre);
+    const res = await account.invoke(contractInstance, func, _calldata);
     console.log("Response:", res);
   });
 
